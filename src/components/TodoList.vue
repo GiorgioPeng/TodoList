@@ -21,7 +21,7 @@
     <el-dialog :title="isCreate?'新建':'修改'" :visible.sync="isOpenModifyDialog">
       <el-form :model="form">
         <el-form-item label="任务名称" :label-width="formLabelWidth">
-          <el-input v-model="form.title" autocomplete="off"></el-input>
+          <el-input v-model="form.title" :disabled="isCreate?false:true" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="任务详情" :label-width="formLabelWidth">
           <el-input v-model="form.desc" autocomplete="off"></el-input>
@@ -45,9 +45,12 @@ export default {
   name: "TodoList",
   components: {},
   created() {
-    fetch("http://127.0.0.1:7001/news").then(e => e.json()).then(e => {
-        this.tableData = e.data.list
-    });
+    fetch("http://127.0.0.1:7001/todolist/list")
+      .then(e => e.json())
+      .then(e => {
+        console.log(e.data)
+        this.tableData = e.data;
+      });
   },
   methods: {
     add() {
@@ -64,6 +67,22 @@ export default {
       temp.desc = this.form.desc;
       temp.ddl = this.form.ddl;
       temp.weight = this.form.weight;
+      fetch("http://127.0.0.1:7001/todolist/delete", {
+        method: "POST",
+        mode: "cors",
+        // credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title:temp.title,
+          desc:temp.desc,
+          ddl:temp.ddl,
+          weight:temp.weight
+        })
+      }).then(function(response) {
+        console.log(response);
+      });
       this.tableData.push(temp);
       this.isOpenModifyDialog = false;
       this.isCreate = false;
@@ -77,7 +96,24 @@ export default {
       this.isOpenModifyDialog = true;
     },
     handleDelete(index, row) {
+      let deleteOne = this.tableData[index]
       this.tableData.splice(index, 1);
+      fetch("http://127.0.0.1:7001/todolist/delete", {
+        method: "POST",
+        mode: "cors",
+        // credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title:deleteOne.title,
+          desc:deleteOne.desc,
+          ddl:deleteOne.ddl,
+          weight:deleteOne.weight
+        })
+      }).then(function(response) {
+        console.log(response);
+      });
       console.log(row);
     },
     modify() {
@@ -85,6 +121,23 @@ export default {
       this.tableData[this.form.index].desc = this.form.desc;
       this.tableData[this.form.index].ddl = this.form.ddl;
       this.tableData[this.form.index].weight = this.form.weight;
+      fetch("http://127.0.0.1:7001/todolist/modify", {
+        method: "POST",
+        mode: "cors",
+        // credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title:this.form.title,
+          desc:this.form.desc,
+          ddl:this.form.ddl,
+          weight:this.form.weight
+        })
+      }).then(function(response) {
+        console.log(response);
+      });
+      console.log(this.tableData)
       this.isOpenModifyDialog = false;
     }
   },
