@@ -67,7 +67,7 @@ export default {
       temp.desc = this.form.desc;
       temp.ddl = this.form.ddl;
       temp.weight = this.form.weight;
-      fetch("http://127.0.0.1:7001/todolist/delete", {
+      fetch("http://127.0.0.1:7001/todolist/add", {
         method: "POST",
         mode: "cors",
         // credentials: "include",
